@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 //Purpose: C# console application that allows maintains an Employee List
 //Revision History:
 //REV00 - 2023/11/29 - Initial version, AddEmployee and DisplayEmployees methods
+//REV01 - 2023/11/29 - Error handling
 
 namespace A5SathlerDelfinoA {
     internal class Program {
@@ -43,7 +45,16 @@ namespace A5SathlerDelfinoA {
                 Console.ResetColor(); //Reset color
             } else { //If not, ask for name and salary
                 name = UserInput.ReadString("Please, enter the employee name: ");  //Call method ReadInt to read a string
+
+                if (string.IsNullOrEmpty(name)) { //If name is empty, throw error
+                    throw new ArgumentNullException("\nThe input cannot be empty.");
+                }
+
                 salary = UserInput.ReadInt("Please, enter the employee monthly salary: ");  //Call method ReadInt to read an int
+
+                if(salary < 0) { //If salary is negative, throw error
+                    throw new ArgumentOutOfRangeException("\nSalary cannot be negative.");
+                }
 
                 employee = new EmployeeRecord(employeeId, name, salary); //Create a new instance of EmployeeRecord
                 employeeRecords.Add(employee); //Add employee in the list employeeRecords
@@ -93,8 +104,21 @@ namespace A5SathlerDelfinoA {
                     }
                 } while (menuChoice.ToString().ToUpper() != "D");
             } catch (FormatException) {
-                Console.ResetColor(); //Reset color
+                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
                 Console.WriteLine("\nInput with invalid format.");
+                Console.ResetColor(); //Reset color
+            } catch (ArgumentNullException ex) {
+                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                Console.WriteLine(ex.ParamName);
+                Console.ResetColor(); //Reset color
+            } catch (ArgumentOutOfRangeException ex) {
+                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                Console.WriteLine(ex.ParamName);
+                Console.ResetColor(); //Reset color
+            } catch (Exception) {
+                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                Console.WriteLine("Something went wrong.");
+                Console.ResetColor(); //Reset color
             } finally {
                 Console.WriteLine("\nThanks for using our application.");
                 Console.ReadKey();
