@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 //Aline Sathler Delfino - Assignment 5
 //Name of Project: Employee List
@@ -12,24 +14,12 @@ using System.Threading.Tasks;
 //Revision History:
 //REV00 - 2023/11/29 - Initial version, AddEmployee and DisplayEmployees methods
 //REV01 - 2023/11/29 - Error handling
+//REV02 - 2023/11/30 - EditEmployee
 
 namespace A5SathlerDelfinoA {
     internal class Program {
         //List with all employees
         public static List<EmployeeRecord> employeeRecords = new List<EmployeeRecord>();
-
-        //Method CheckId to check if employee already exists. If yes, it returns the index, if no it returns -1
-        static int CheckId(int employeeId) {
-            int index = -1;
-
-            for (int i = 0; i < employeeRecords.Count; i++) {
-                if (employeeRecords[i].id == employeeId) {
-                    index = i;
-                }
-            }
-
-            return index;
-        }
 
         //Method AddEmployee to add a new employee to the list employeeRecords
         static void AddEmployee() {
@@ -39,22 +29,20 @@ namespace A5SathlerDelfinoA {
 
             employeeId = UserInput.ReadInt("Please, enter the employee unique identifier: "); //Call method ReadInt to read an int
 
-            if (CheckId(employeeId) != -1) { //Call method CheckId to check if employee already exists
+            if (EmployeeRecord.CheckId(employeeId) != -1) { //Call method CheckId to check if employee already exists
                 Console.ForegroundColor = ConsoleColor.Red; //Change color to red
                 Console.WriteLine("\nEmployee already exists.\n"); //Show error message if already exists
                 Console.ResetColor(); //Reset color
             } else { //If not, ask for name and salary
-                name = UserInput.ReadString("Please, enter the employee name: ");  //Call method ReadInt to read a string
+                name = UserInput.ReadString("Please, enter the employee name: ");  //Call method ReadString to read a string
 
-                if (string.IsNullOrEmpty(name)) { //If name is empty, throw error
-                    throw new ArgumentNullException("\nThe input cannot be empty.");
-                }
+                //Call method CheckName to check if name is empty
+                EmployeeRecord.CheckName(name);
 
                 salary = UserInput.ReadInt("Please, enter the employee monthly salary: ");  //Call method ReadInt to read an int
 
-                if(salary < 0) { //If salary is negative, throw error
-                    throw new ArgumentOutOfRangeException("\nSalary cannot be negative.");
-                }
+                //Call method CheckSalary to check if salary is negative or equal to 0
+                EmployeeRecord.CheckSalary(salary);
 
                 employee = new EmployeeRecord(employeeId, name, salary); //Create a new instance of EmployeeRecord
                 employeeRecords.Add(employee); //Add employee in the list employeeRecords
@@ -67,10 +55,24 @@ namespace A5SathlerDelfinoA {
                 Console.WriteLine("\nNo employee record exists.\n"); //Show error message for no record
                 Console.ResetColor(); //Reset color
             } else {
-                Console.WriteLine(EmployeeRecord.DisplayEmployeeInformation(employeeRecords)); //Display list of employees in employeeRecords
+                Console.WriteLine(EmployeeRecord.DisplayEmployeeInformation()); //Call DisplayEmployeeInformation to display list of employees in employeeRecords
             }
         }
+
+        static void EditEmployee() {
+            if (employeeRecords.Count == 0) { //Check if there is any employee in the list
+                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                Console.WriteLine("\nNo employee record exists.\n"); //Show error message for no record
+                Console.ResetColor(); //Reset color
+            } else {
+                EmployeeRecord.EditEmployeeInformation();  //Call EditEmployeeInformation to edit employee in employeeRecords
+            }
+        }
+
         static void Main(string[] args) {
+            EmployeeRecord test = new EmployeeRecord(1, "Aline Sathler", 20000);
+            employeeRecords.Add(test);
+
             char menuChoice;
 
             try {
@@ -78,7 +80,7 @@ namespace A5SathlerDelfinoA {
                     Console.WriteLine("Welcome to our Employee Record");
                     Console.WriteLine("-------------------------------------");
                     //Call method Menu to read a input as a menu choice (char)
-                    menuChoice = UserInput.Menu("A. Add a new Employee\r\nB. Edit Employee Record\r\nC. Display Employess\r\nD. Exit\r\nEnter your choice: ");
+                    menuChoice = UserInput.Menu("A. Add a new Employee\r\nB. Edit Employee Record\r\nC. Display Employess\r\nD. Exit\r\n\nEnter your choice: ");
 
                     switch (menuChoice.ToString().ToUpper()) {
                         case "A":
@@ -88,6 +90,10 @@ namespace A5SathlerDelfinoA {
                             AddEmployee();
                             break;
                         case "B":
+                            Console.Clear(); //Clear console
+
+                            //Call method EditEmployee to edit an employee in the list employeeRecords
+                            EditEmployee();
                             break;
                         case "C":
                             Console.Clear(); //Clear console

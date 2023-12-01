@@ -13,7 +13,7 @@ namespace A5SathlerDelfinoA {
 
             Console.Write(prompt);
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.Yellow;  //Change color to yellow
             input = Console.ReadLine();
             Console.ResetColor(); //Reset color
 
@@ -26,7 +26,7 @@ namespace A5SathlerDelfinoA {
 
             Console.Write(prompt);
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.Yellow;   //Change color to yellow
             input = Convert.ToInt32(Console.ReadLine());
             Console.ResetColor(); //Reset color
 
@@ -37,7 +37,7 @@ namespace A5SathlerDelfinoA {
         public static char Menu(string prompt) {
             char menuChoice;
 
-            menuChoice = ReadString(prompt)[0];
+            menuChoice = ReadString(prompt)[0]; //Read the first letter of the input
 
             return menuChoice;
         }
