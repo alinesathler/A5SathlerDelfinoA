@@ -70,32 +70,38 @@ namespace A5SathlerDelfinoA {
         //Method EditId to edit the unique identifier of an employee in the list employeeRecords
         static void EditId(int index) {
             try {
+                string input;
                 int employeeId;
 
-                employeeId = UserInput.ReadInt("Please, enter the new employee unique identifier: "); //Call method ReadInt to read an int
+                input = UserInput.ReadString("\nPlease, enter the employee new unique identifier: ");  //Call method ReadString to read a string
 
-                if (CheckId(employeeId) != -1) { //Call method CheckId to check if employee already exists
-                    Console.ForegroundColor = ConsoleColor.Red; //Change color to red
-                    Console.WriteLine("\nEmployee already exists.\n"); //Show error message if already exists
-                    Console.ResetColor(); //Reset color
-                } else {
-                    Program.employeeRecords[index].id = employeeId; //Change the unique identifier
+                //Check if input is quit if yes, return to main menu if no, continue the program
+                if (!UserInput.Quit(input)) {
+                    employeeId = Convert.ToInt32(input);
 
-                    //Confirmation
-                    Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
-                    Console.WriteLine("\nThe unique identifier of the employee has been changed.");
-                    Console.ResetColor();   //Reset color
+                    if (CheckId(employeeId) != -1) { //Call method CheckId to check if employee already exists
+                        Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                        Console.WriteLine("\nEmployee already exists.\n"); //Show error message if already exists
+                        Console.ResetColor(); //Reset color
+                    } else {
+                        Program.employeeRecords[index].id = employeeId; //Change the unique identifier
+
+                        //Confirmation
+                        Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
+                        Console.WriteLine("\nThe unique identifier of the employee has been changed.");
+                        Console.ResetColor();   //Reset color
+                    }
                 }
             } catch (FormatException) {
                 Console.ForegroundColor = ConsoleColor.Red; //Change color to red
-                Console.WriteLine("\nInput with invalid format. Let's try again.\n");
+                Console.WriteLine("\nInput with invalid format. Let's try again.");
                 Console.ResetColor(); //Reset color
 
                 //Call method EditId again
                 EditId(index);
             } catch (Exception) {
                 Console.ForegroundColor = ConsoleColor.Red; //Change color to red
-                Console.WriteLine("Something went wrong. Let's try again.\n");
+                Console.WriteLine("\nSomething went wrong. Let's try again.");
                 Console.ResetColor(); //Reset color
 
                 //Call method EditId again
@@ -106,19 +112,25 @@ namespace A5SathlerDelfinoA {
         //Method EditName to edit the name of an employee in the list employeeRecords
         static void EditName(int index) {
             try {
+                string input;
                 string name;
 
-                name = UserInput.ReadString("Please, enter the new employee name: ");  //Call method ReadString to read a string
+                input = UserInput.ReadString("Please, enter the new employee name: ");  //Call method ReadString to read a string
 
-                //Call method CheckName to check if name is empty
-                CheckName(name);
+                //Check if input is quit if yes, return to main menu if no, continue the program
+                if (!UserInput.Quit(input)) {
+                    name = input;
 
-                Program.employeeRecords[index].name = name; //Change name
+                    //Call method CheckName to check if name is empty
+                    CheckName(name);
 
-                //Confirmation
-                Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
-                Console.WriteLine("\nThe name of the employee has been changed.");
-                Console.ResetColor();   //Reset color
+                    Program.employeeRecords[index].name = name; //Change name
+
+                    //Confirmation
+                    Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
+                    Console.WriteLine("\nThe name of the employee has been changed.");
+                    Console.ResetColor();   //Reset color
+                }
             } catch (ArgumentNullException ex) {
                 Console.ForegroundColor = ConsoleColor.Red; //Change color to red
                 Console.WriteLine(ex.ParamName);
@@ -139,19 +151,26 @@ namespace A5SathlerDelfinoA {
         //Method EditSalary to edit the salary of an employee in the list employeeRecords
         static void EditSalary(int index) {
             try {
+                string input;
                 int salary;
 
-                salary = UserInput.ReadInt("Please, enter the new employee salary: "); //Call method ReadInt to read an int
+                input = UserInput.ReadString("Please, enter the new employee salary: ");  //Call method ReadString to read a string
 
-                //Call method CheckSalary to check if salary is empty
-                CheckSalary(salary);
+                //Check if input is quit if yes, return to main menu if no, continue the program
+                if (!UserInput.Quit(input)) {
 
-                Program.employeeRecords[index].salary = salary; //Change salary
+                    salary = Convert.ToInt32(input);
 
-                //Confirmation
-                Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
-                Console.WriteLine("\nThe salary of the employee has been changed.");
-                Console.ResetColor();   //Reset color
+                    //Call method CheckSalary to check if salary is empty
+                    CheckSalary(salary);
+
+                    Program.employeeRecords[index].salary = salary; //Change salary
+
+                    //Confirmation
+                    Console.ForegroundColor = ConsoleColor.Green;  //Change text color the green
+                    Console.WriteLine("\nThe salary of the employee has been changed.");
+                    Console.ResetColor();   //Reset color
+                }
             } catch (ArgumentOutOfRangeException ex) {
                 Console.ForegroundColor = ConsoleColor.Red; //Change color to red
                 Console.WriteLine(ex.ParamName);
@@ -180,10 +199,10 @@ namespace A5SathlerDelfinoA {
 
         //Method DisplayEmployeeInformation to display the information of all employess in the list employeeRecords
         public static string DisplayEmployeeInformation() {
-            string information = "";
+            string information = "\n";
 
             foreach (EmployeeRecord employee in Program.employeeRecords) {
-                information += $"Name: {employee.name}, Salary: {employee.salary}\n";
+                information += employee.ToString() + "\n";
             }
 
             return information;
@@ -191,54 +210,62 @@ namespace A5SathlerDelfinoA {
 
         //Method EditEmployee to edit an employee in the list employeeRecords
         public static void EditEmployeeInformation() {
+            string input;
             int employeeId, index;
             char menuChoice;
 
-            employeeId = UserInput.ReadInt("Please, enter the employee unique identifier you would like to edit: "); //Call method ReadInt to read an int
+            Console.WriteLine(DisplayEmployeeInformation()); //Display the full list of employees
 
-            //Call method CheckId to check if employee already exists
-            index = CheckId(employeeId);
+            input = UserInput.ReadString("Please, enter the employee unique identifier you would like to edit: ");  //Call method ReadString to read a string
 
-            if (index == -1) {
-                Console.ForegroundColor = ConsoleColor.Red; //Change color to red
-                Console.WriteLine("\nEmployee not found. Please try again.\n"); //Show error message if employee not found
-                Console.ResetColor(); //Reset color
+            //Check if input is quit if yes, return to main menu if no, continue the program
+            if (!UserInput.Quit(input)) {
+                employeeId = Convert.ToInt32(input);
 
-                EditEmployeeInformation();
-            } else { //If found, display enployee data and ask which information they want to edit
-                do {
-                    Console.WriteLine($"\n{Program.employeeRecords[index].ToString()}"); //Display enployee data
+                //Call method CheckId to check if employee already exists
+                index = CheckId(employeeId);
 
-                    //Call method Menu to read a input as a menu choice (char)
-                    menuChoice = UserInput.Menu("\nA. Edit Employee Identifier\r\nB. Edit Employee Name\r\nC. Edit Employee Salary\r\nD. Exit\r\n\nEnter your choice: ");
+                if (index == -1) {
+                    Console.ForegroundColor = ConsoleColor.Red; //Change color to red
+                    Console.WriteLine("\nEmployee not found. Please try again.\n"); //Show error message if employee not found
+                    Console.ResetColor(); //Reset color
 
-                    switch (menuChoice.ToString().ToUpper()) {
-                        case "A":
-                            Console.Clear(); //Clear console
+                    EditEmployeeInformation();
+                } else { //If found, display enployee data and ask which information they want to edit
+                    do {
+                        Console.WriteLine($"\n{Program.employeeRecords[index].ToString()}"); //Display enployee data
 
-                            //Call method EditId to edit employee unique identifier in the list employeeRecords
-                            EditId(index);
-                            break;
-                        case "B":
-                            Console.Clear(); //Clear console
+                        //Call method Menu to read a input as a menu choice (char)
+                        menuChoice = UserInput.Menu("\nA. Edit Employee Identifier\r\nB. Edit Employee Name\r\nC. Edit Employee Salary\r\nD. Exit\r\n\nEnter your choice: ");
 
-                            //Call method EditName to edit employee name in the list employeeRecords
-                            EditName(index);
-                            break;
-                        case "C":
-                            Console.Clear(); //Clear console
-
-                            //Call method EditSalary to edit employee salary in the list employeeRecords
-                            EditSalary(index);
-                            break;
-                        case "D":
-                            Console.WriteLine("\nYou're leaving edition menu.\n");
-                            break;
-                        default:
-                            Console.WriteLine("\nInvalid menu, please try again.\n");
-                            break;
-                    }
-                } while (menuChoice.ToString().ToUpper() != "D");
+                        switch (menuChoice.ToString().ToUpper()) {
+                            case "A":
+                                //Call method EditId to edit employee unique identifier in the list employeeRecords
+                                EditId(index);
+                                Console.ReadKey();
+                                Console.Clear(); //Clear console
+                                break;
+                            case "B":
+                                //Call method EditName to edit employee name in the list employeeRecords
+                                EditName(index);
+                                Console.ReadKey();
+                                Console.Clear(); //Clear console
+                                break;
+                            case "C":
+                                //Call method EditSalary to edit employee salary in the list employeeRecords
+                                EditSalary(index);
+                                Console.ReadKey();
+                                Console.Clear(); //Clear console
+                                break;
+                            case "D":
+                                Console.WriteLine("\nYou're leaving edition menu.\n");
+                                break;
+                            default:
+                                Console.WriteLine("\nInvalid menu, please try again.\n");
+                                break;
+                        }
+                    } while (menuChoice.ToString().ToUpper() != "D");
+                }
             }
         }
     }

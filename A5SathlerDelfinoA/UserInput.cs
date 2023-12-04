@@ -41,5 +41,15 @@ namespace A5SathlerDelfinoA {
 
             return menuChoice;
         }
+
+        public static bool Quit(string input) {
+            bool isQuit = false;
+
+            if (input.ToLower() == "quit") {
+                isQuit = true;
+            }
+
+            return isQuit;
+        }
     }
 }
